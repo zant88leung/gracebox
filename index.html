@@ -78,7 +78,6 @@
             z-index: 10;
         }
 
-        /* --- 強化的閃爍光雲效果 --- */
         .btn-wrapper {
             position: relative;
             display: flex;
@@ -92,12 +91,10 @@
             position: absolute;
             width: 180px; 
             height: 60px;
-            /* 使用更高亮度的白色與金黃色 */
             background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,215,0,0.5) 40%, rgba(255,255,255,0) 70%);
             border-radius: 50%;
             filter: blur(12px);
             z-index: 1;
-            /* 增加外發光陰影，讓光雲更厚實明顯 */
             box-shadow: 0 0 30px 15px rgba(255, 255, 255, 0.4), 
                         0 0 50px 30px rgba(255, 215, 0, 0.2);
             animation: intenseFlicker 2s infinite ease-in-out;
@@ -105,23 +102,15 @@
         }
 
         @keyframes intenseFlicker {
-            0%, 100% { 
-                transform: scale(0.9); 
-                opacity: 0.3; 
-                filter: blur(10px);
-            }
-            50% { 
-                transform: scale(1.3); 
-                opacity: 1; 
-                filter: blur(15px);
-            }
+            0%, 100% { transform: scale(0.9); opacity: 0.3; filter: blur(10px); }
+            50% { transform: scale(1.3); opacity: 1; filter: blur(15px); }
         }
 
         .spin-btn {
             position: relative;
             z-index: 2;
             background: linear-gradient(135deg, #FFD54F, #F57F17);
-            border: 2px solid #FFF; /* 增加白邊讓按鈕更突顯 */
+            border: 2px solid #FFF;
             padding: 15px 50px;
             border-radius: 35px;
             font-size: 22px;
@@ -132,11 +121,8 @@
             transition: transform 0.2s;
         }
 
-        .spin-btn:active {
-            transform: scale(0.95);
-        }
+        .spin-btn:active { transform: scale(0.95); }
 
-        /* --- 模態框與卡片 --- */
         #modal-overlay {
             display: none;
             position: fixed;
@@ -187,7 +173,6 @@
             padding: 10px; border-radius: 50%; width: 50px; height: 50px; display: flex;
             align-items: center; justify-content: center; cursor: pointer;
         }
-
     </style>
 </head>
 <body>
@@ -243,6 +228,13 @@
         let currentRotation = 0;
         const bgMusic = document.getElementById('bg-music');
         const musicBtn = document.getElementById('music-toggle');
+        const spinSound = document.getElementById('sound-spin');
+        const dingSound = document.getElementById('sound-ding');
+
+        // 初始化音量設定
+        bgMusic.volume = 0.2;     // 背景音樂設為 20%
+        spinSound.volume = 0.5;   // 轉動聲設為 50%
+        dingSound.volume = 0.6;   // 叮聲設為 60%
 
         function spinWheel() {
             if (spinning) return;
@@ -255,20 +247,18 @@
             spinning = true;
             document.getElementById('spin-area').style.visibility = 'hidden';
 
-            const wheel = document.getElementById('wheel');
-            const spinAudio = document.getElementById('sound-spin');
-            spinAudio.play().catch(()=>{});
+            spinSound.play().catch(()=>{});
 
             const randomExtra = Math.floor(Math.random() * 360);
             currentRotation += (3600 + randomExtra); 
-            wheel.style.transform = `rotate(${currentRotation}deg)`;
+            document.getElementById('wheel').style.transform = `rotate(${currentRotation}deg)`;
 
             setTimeout(() => {
                 const actualDeg = (360 - (currentRotation % 360)) % 360;
                 const themeIndex = Math.floor(actualDeg / 30);
                 const theme = themes[themeIndex] || themes[0];
                 showCard(theme.name, theme.options[0]);
-                document.getElementById('sound-ding').play().catch(()=>{});
+                dingSound.play().catch(()=>{});
                 spinning = false;
             }, 4000);
         }
