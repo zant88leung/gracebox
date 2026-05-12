@@ -78,12 +78,11 @@
             z-index: 10;
         }
 
-        /* 漸變遮罩：上方完全透明，確保不變暗 */
         #modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0.7) 100%);
+            background: rgba(0, 0, 0, 0.7);
             z-index: 100;
         }
 
@@ -128,14 +127,14 @@
         }
 
         .item-title {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 800;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-align: center;
         }
 
         .bible-verse {
-            font-size: 20px; 
+            font-size: 18px; 
             font-weight: 600;
             color: #4E342E;
             margin-bottom: 5px;
@@ -144,14 +143,14 @@
         }
 
         .verse-source {
-            font-size: 14px;
+            font-size: 13px;
             color: #795548;
             text-align: right;
             margin-bottom: 10px;
         }
 
         .comfort-text {
-            font-size: 18px; 
+            font-size: 17px; 
             color: #5D4037;
             border-top: 1.5px solid rgba(121, 85, 72, 0.3);
             padding-top: 10px;
@@ -168,6 +167,11 @@
             color: #3E2723;
             box-shadow: 0 5px 15px rgba(0,0,0,0.4);
             cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button.spin-btn:active {
+            transform: scale(0.95);
         }
 
         .close-btn {
@@ -182,6 +186,30 @@
             font-size: 18px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
+    
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+
+        #music-toggle {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #FFE082;
+            color: #FFE082;
+            padding: 10px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
     </style>
 </head>
 <body>
@@ -208,126 +236,105 @@
 
     <audio id="sound-spin" src="audio/spin.mp3" preload="auto"></audio>
     <audio id="sound-ding" src="audio/ding.mp3" preload="auto"></audio>
+    <audio id="bg-music" src="audio/bgmusic.mp3" loop preload="auto" muted></audio>
+
+    <div class="music-control">
+        <button id="music-toggle" onclick="toggleMusic()">🔇</button>
+    </div>
 
     <script>
-        // 每個主題現在包含一個 options 數組，裡面有 4 組隨機內容
         const themes = [
-            { 
-                name: "皇冠", 
-                options: [
-                    { comfort: "你是尊貴的兒女，主已為你預備了生命的冠冕。", verse: "「必有公義的冠冕為我存留。」— 提摩太後書 4:8" },
-                    { comfort: "不要輕看自己，在主眼中你比珍珠更寶貴，祂要榮耀你。", verse: "「你在我眼中心為寶為尊。」— 以賽亞書 43:4" },
-                    { comfort: "忍受試煉的人是有福的，因為主必賜予生命的冠冕。", verse: "「得勝的，我要賜他在我寶座上與我同坐。」— 啟示錄 3:21" },
-                    { comfort: "謙卑跟隨主的，主必升你為高，將榮耀裝飾你。", verse: "「凡自卑的，必升為高。」— 路加福音 14:11" }
-                ]
-            },
-            { 
-                name: "樹苗", 
-                options: [
-                    { comfort: "雖如微小的種子，但在主的恩典中必能茁壯。", verse: "「他要像一棵樹栽在溪水旁。」— 詩篇 1:3" },
-                    { comfort: "主是你的園丁，祂必按時澆灌，讓你的生命結出佳果。", verse: "「耶和華也必時常引導你。」— 以賽亞書 58:11" },
-                    { comfort: "在基督裡你的根基穩固，無畏風雨，生命必漸漸增長。", verse: "「在他裡面扎根建造。」— 歌羅西書 2:7" },
-                    { comfort: "不要心急，成長需要時間，主必看顧你每一天的變化。", verse: "「凡事都有定期，萬務都有定時。」— 傳道書 3:1" }
-                ]
-            },
-            { 
-                name: "夕陽", 
-                options: [
-                    { comfort: "歇下勞苦，安穩入睡，主應許早晨必有歡呼。", verse: "「一宿雖然有哭泣，早晨便必歡呼。」— 詩篇 30:5" },
-                    { comfort: "黑夜只是暫時的，主的恩典如晨光，必再次照亮你。", verse: "「但向你們敬畏我名的人必有公義的日頭出現。」— 瑪拉基書 4:2" },
-                    { comfort: "在安息中重新得力，主是你靈魂的避風港。", verse: "「你們要休息，知道我是神。」— 詩篇 46:10" },
-                    { comfort: "卸下你背負的重擔，主必親自帶領你進入安息。", verse: "「凡勞苦擔重擔的人可以到我這裡來。」— 馬太福音 11:28" }
-                ]
-            },
-            { 
-                name: "白鴿", 
-                options: [
-                    { comfort: "讓聖靈如鴿子降臨你心，賜下超越環境的平安。", verse: "「我留下平安給你們。」— 約翰福音 14:27" },
-                    { comfort: "紛擾的世界中，主是你的安靜處，祂必保守你心懷意念。", verse: "「上帝所賜出人意外的平安。」— 腓立比書 4:7" },
-                    { comfort: "主必指引你的腳步，走在平安與真理的路上。", verse: "「把我們的腳引到平安的路上。」— 路加福音 1:79" },
-                    { comfort: "不要憂慮，聖靈正與你同在，為你祈求平安。", verse: "「聖靈親自用說不出來的嘆息替我們禱告。」— 羅馬書 8:26" }
-                ]
-            },
-            { 
-                name: "酒杯", 
-                options: [
-                    { comfort: "祂的恩典使你的福杯滿溢，主是你生命的泉源。", verse: "「使我的福杯滿溢。」— 詩篇 23:5" },
-                    { comfort: "在乾旱之地，主必賜你生命之水，讓你不再乾渴。", verse: "「人若喝我所賜的水就永遠不渴。」— 約翰福音 4:14" },
-                    { comfort: "主所賜的喜樂是你的力量，願你每天都充滿感恩。", verse: "「你們要靠主常常喜樂。」— 腓立比書 4:4" },
-                    { comfort: "上帝的供應超過你所求所想，祂必照祂榮耀的豐富供給你。", verse: "「我的上帝必照他榮耀的豐富。」— 腓立比書 4:19" }
-                ]
-            },
-            { 
-                name: "燈台", 
-                options: [
-                    { comfort: "即便身處幽暗，主的話是你腳前的燈，必指引你。", verse: "「你的話是我腳前的燈。」— 詩篇 119:105" },
-                    { comfort: "你是世上的光，主必點燃你的熱情，照亮身邊的人。", verse: "「你們的光也當這樣照在人前。」— 馬太福音 5:16" },
-                    { comfort: "真理必叫你得以自由，在迷霧中主的光必為你導航。", verse: "「你們必曉得真理，真理必叫你們得以自由。」— 約翰福音 8:32" },
-                    { comfort: "不用害怕前方的未知，因為主正行走在你的前面。", verse: "「耶和華必在你前面行。」— 申命記 31:8" }
-                ]
-            },
-            { 
-                name: "盾牌", 
-                options: [
-                    { comfort: "主是你的避難所，祂的信實是你大小的盾牌。", verse: "「耶和華是我的力量，是我的盾牌。」— 詩篇 28:7" },
-                    { comfort: "仇敵的箭不能傷害你，因為主親自四面環繞保護你。", verse: "「他是我的高台，是我的救主。」— 詩篇 144:2" },
-                    { comfort: "在軟弱中主的力量顯得完全，祂必扶持你的手。", verse: "「我的恩典夠你用的。」— 哥林多後書 12:9" },
-                    { comfort: "你是被揀選的，主必保守你免受一切災禍。", verse: "「耶和華要保護你，免受一切的災害。」— 詩篇 121:7" }
-                ]
-            },
-            { 
-                name: "鎖匙", 
-                options: [
-                    { comfort: "在看似無路可走時，主必為你開那無人能關的門。", verse: "「拿著大衛鑰匙的，開了就無人能關。」— 啟示錄 3:7" },
-                    { comfort: "主必賜你智慧，去解開生命中的種種難題。", verse: "「你們中間若有缺少智慧的，應當求上帝。」— 雅各書 1:5" },
-                    { comfort: "祈求就給你們，尋找就尋見，扣門就給你們開門。", verse: "「尋找，就尋見。」— 馬太福音 7:7" },
-                    { comfort: "天國的鑰匙已在你手中，靠著主你凡事都能作。", verse: "「我靠著那加給我力量的，凡事都能作。」— 腓立比書 4:13" }
-                ]
-            },
-            { 
-                name: "百合", 
-                options: [
-                    { comfort: "看那野地的百合花，主既看顧牠，更必顧念你。", verse: "「你想野地裡的百合花怎麼長起來。」— 馬太福音 6:28" },
-                    { comfort: "你的每一根頭髮主都數過，祂關心你生命中的微小細節。", verse: "「就是你們的頭髮，也都被數過了。」— 馬太福音 10:30" },
-                    { comfort: "不要為明天憂慮，一天的難處一天當就夠了，主必預備。", verse: "「所以，不要為明天憂慮。」— 馬太福音 6:34" },
-                    { comfort: "主必賜你如百合般的純潔與平靜，在繁雜中仍有芬芳。", verse: "「得救在乎歸回安息。」— 以賽亞書 30:15" }
-                ]
-            },
-            { 
-                name: "葡萄", 
-                options: [
-                    { comfort: "常在主裡面，生命就必多結果子，祂供應你養分。", verse: "「我是葡萄樹，你們是枝子。」— 約翰福音 15:5" },
-                    { comfort: "忍耐生老練，老練生盼望，你在試煉後必得豐富。", verse: "「忍耐生老練，老練生盼望。」— 羅馬書 5:4" },
-                    { comfort: "主必修剪你的生命，使你結出仁愛、喜樂、和平的果子。", verse: "「聖靈所結的果子。」— 加拉太書 5:22" },
-                    { comfort: "連結於主，你的喜樂就必滿足，生命必有甘甜。", verse: "「使你們的喜樂可以滿足。」— 約翰福音 15:11" }
-                ]
-            },
-            { 
-                name: "爉燭", 
-                options: [
-                    { comfort: "哪怕只有微弱的光，主必不吹滅那將殘的燈火。", verse: "「將殘的燈火，他不吹滅。」— 馬太福音 12:20" },
-                    { comfort: "你是這世界的鹽和光，主必保守你發光到永遠。", verse: "「你們是世上的光。」— 馬太福音 5:14" },
-                    { comfort: "在寒冷的時刻，主的話語如暖流，溫暖你的心靈。", verse: "「他的言語，如同火焚。」— 耶利米書 23:29" },
-                    { comfort: "燃燒自己照亮他人時，主必不斷為你添加恩典的油。", verse: "「在那裡我必使大衛的角發生。」— 詩篇 132:17" }
-                ]
-            },
-            { 
-                name: "星星", 
-                options: [
-                    { comfort: "仰望星空，主的應許如繁星般永恆且閃耀。", verse: "「智慧人必發光，如同天上的光。」— 但以理書 12:3" },
-                    { comfort: "雖然前路迷茫，但晨星已在心裡升起，主正引導你。", verse: "「直等到天發亮，晨星在你們心裡出現。」— 彼得後書 1:19" },
-                    { comfort: "你的名字已記錄在天上，主永遠記得你，保護你。", verse: "「要因你們的名記錄在天上歡喜。」— 路加福音 10:20" },
-                    { comfort: "上帝的慈愛比星海更廣，祂對你的意念極其寶貴。", verse: "「上帝啊，你的意念向我何等寶貴！」— 詩篇 139:17" }
-                ]
-            }
+            { name: "皇冠", options: [
+                { comfort: "你是尊貴的兒女，主已為你預備了生命的冠冕。", verse: "「必有公義的冠冕為我存留。」— 提摩太後書 4:8" },
+                { comfort: "不要輕看自己，在主眼中你比珍珠更寶貴。", verse: "「你在我眼中心為寶為尊。」— 以賽亞書 43:4" },
+                { comfort: "忍受試煉的人是有福的，因為主必賜予冠冕。", verse: "「得勝的，我要賜他在我寶座上與我同坐。」— 啟示錄 3:21" },
+                { comfort: "謙卑跟隨主的，主必升你為高。", verse: "「凡自卑的，必升為高。」— 路加福音 14:11" }
+            ]},
+            { name: "樹苗", options: [
+                { comfort: "雖如微小的種子，但在恩典中必能茁壯。", verse: "「他要像一棵樹栽在溪水旁。」— 詩篇 1:3" },
+                { comfort: "主是你的園丁，祂必按時澆灌。", verse: "「耶和華也必時常引導你。」— 以賽亞書 58:11" },
+                { comfort: "在基督裡你的根基穩固，無畏風雨。", verse: "「在他裡面扎根建造。」— 歌羅西書 2:7" },
+                { comfort: "成長需要時間，主必看顧你。", verse: "「凡事都有定期，萬務都有定時。」— 傳道書 3:1" }
+            ]},
+            { name: "夕陽", options: [
+                { comfort: "歇下勞苦，安穩入睡，主應許早晨必有歡呼。", verse: "「一宿雖然有哭泣，早晨便必歡呼。」— 詩篇 30:5" },
+                { comfort: "黑夜只是暫時的，主的恩典如晨光。", verse: "「向你們敬畏我名的人必有公義的日頭出現。」— 瑪拉基書 4:2" },
+                { comfort: "在安息中重新得力，主是你的避風港。", verse: "「你們要休息，知道我是神。」— 詩篇 46:10" },
+                { comfort: "卸下你背負的重擔，主必領你進入安息。", verse: "「凡勞苦擔重擔的人可以到我這裡來。」— 馬太福音 11:28" }
+            ]},
+            { name: "白鴿", options: [
+                { comfort: "讓聖靈如鴿子降臨你心，賜下平安。", verse: "「我留下平安給你們。」— 約翰福音 14:27" },
+                { comfort: "主是你的安靜處，祂必保守你心懷意念。", verse: "「上帝所賜出人意外的平安。」— 腓立比書 4:7" },
+                { comfort: "主必指引你的腳步，走在平安與真理的路上。", verse: "「把我們的腳引到平安的路上。」— 路加福音 1:79" },
+                { comfort: "不要憂慮，聖靈正與你同在。", verse: "「聖靈親自用說不出來的嘆息替我們禱告。」— 羅馬書 8:26" }
+            ]},
+            { name: "酒杯", options: [
+                { comfort: "祂的恩典使你的福杯滿溢，主是你的泉源。", verse: "「使我的福杯滿溢。」— 詩篇 23:5" },
+                { comfort: "在乾旱之地，主必賜你生命之水。", verse: "「人若喝我所賜的水就永遠不渴。」— 約翰福音 4:14" },
+                { comfort: "主所賜的喜樂是你的力量。", verse: "「你們要靠主常常喜樂。」— 腓立比書 4:4" },
+                { comfort: "上帝的供應超過你所求所想。", verse: "「我的上帝必照他榮耀的豐富。」— 腓立比書 4:19" }
+            ]},
+            { name: "燈台", options: [
+                { comfort: "即便身處幽暗，主的話是你腳前的燈。", verse: "「你的話是我腳前的燈。」— 詩篇 119:105" },
+                { comfort: "你是世上的光，主必點燃你的熱情。", verse: "「你們的光也當這樣照在人前。」— 馬太福音 5:16" },
+                { comfort: "真理必叫你得以自由，主的光必導航。", verse: "「你們必曉得真理，真理必叫你們得以自由。」— 約翰福音 8:32" },
+                { comfort: "不用害怕前方的未知，主正行走在前面。", verse: "「耶和華必在你前面行。」— 申命記 31:8" }
+            ]},
+            { name: "盾牌", options: [
+                { comfort: "主是你的避難所，祂的信實是你的盾牌。", verse: "「耶和華是我的力量，是我的盾牌。」— 詩篇 28:7" },
+                { comfort: "仇敵的箭不能傷害你，主必保護你。", verse: "「他是我的高台，是我的救主。」— 詩篇 144:2" },
+                { comfort: "在軟弱中主的力量顯得完全。", verse: "「我的恩典夠你用的。」— 哥林多後書 12:9" },
+                { comfort: "你是被揀選的，主必保守你。", verse: "「耶和華要保護你，免受一切的災害。」— 詩篇 121:7" }
+            ]},
+            { name: "鎖匙", options: [
+                { comfort: "主必為你開那無人能關的門。", verse: "「拿著大衛鑰匙的，開了就無人能關。」— 啟示錄 3:7" },
+                { comfort: "主必賜你智慧，去解開生命中的難題。", verse: "「你們中間若有缺少智慧的，應當求上帝。」— 雅各書 1:5" },
+                { comfort: "祈求就給你們，尋找就尋見。", verse: "「尋找，就尋見。」— 馬太福音 7:7" },
+                { comfort: "天國的鑰匙已在手中，靠著主你凡事都能作。", verse: "「我靠著那加給我力量的，凡事都能作。」— 腓立比書 4:13" }
+            ]},
+            { name: "百合", options: [
+                { comfort: "看那野地的百合花，主更必顧念你。", verse: "「你想野地裡的百合花怎麼長起來。」— 馬太福音 6:28" },
+                { comfort: "你的每一根頭髮主都數過。", verse: "「就是你們的頭髮，也都被數過了。」— 馬太福音 10:30" },
+                { comfort: "不要為明天憂慮，主必預備。", verse: "「所以，不要為明天憂慮。」— 馬太福音 6:34" },
+                { comfort: "主必賜你如百合般的純潔與平靜。", verse: "「得救在乎歸回安息。」— 以賽亞書 30:15" }
+            ]},
+            { name: "葡萄", options: [
+                { comfort: "常在主裡面，生命就必多結果子。", verse: "「我是葡萄樹，你們是枝子。」— 約翰福音 15:5" },
+                { comfort: "忍耐生老練，你在試煉後必得豐富。", verse: "「忍耐生老練，老練生盼望。」— 羅馬書 5:4" },
+                { comfort: "主必修剪你的生命，使你結出聖靈果子。", verse: "「聖靈所結的果子。」— 加拉太書 5:22" },
+                { comfort: "連結於主，你的喜樂就必滿足。", verse: "「使你們的喜樂可以滿足。」— 約翰福音 15:11" }
+            ]},
+            { name: "爉燭", options: [
+                { comfort: "哪怕只有微弱的光，主必不吹滅。", verse: "「將殘的燈火，他不吹滅。」— 馬太福音 12:20" },
+                { comfort: "你是這世界的鹽和光，發光到永遠。", verse: "「你們是世上的光。」— 馬太福音 5:14" },
+                { comfort: "主的話語如暖流，溫暖你的心靈。", verse: "「他的言語，如同火焚。」— 耶利米書 23:29" },
+                { comfort: "主必不斷為你添加恩典的油。", verse: "「在那裡我必使大衛的角發生。」— 詩篇 132:17" }
+            ]},
+            { name: "星星", options: [
+                { comfort: "仰望星空，主的應許如繁星般永恆。", verse: "「智慧人必發光，如同天上的光。」— 但以理書 12:3" },
+                { comfort: "雖然前路迷茫，但晨星已在心裡升起。", verse: "「直等到天發亮，晨星在你們心裡出現。」— 彼得後書 1:19" },
+                { comfort: "你的名字已記錄在天上。", verse: "「要因你們的名記錄在天上歡喜。」— 路加福音 10:20" },
+                { comfort: "上帝對你的意念極其寶貴。", verse: "「上帝啊，你的意念向我何等寶貴！」— 詩篇 139:17" }
+            ]}
         ];
 
         let spinning = false;
         let currentRotation = 0;
+        const bgMusic = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-toggle');
 
         function spinWheel() {
             if (spinning) return;
+            
+            // 點擊按鈕時觸發背景音樂播放 (解除靜音並播放)
+            if (bgMusic.paused) {
+                bgMusic.muted = false;
+                bgMusic.play().catch(e => console.log("BGM 播放失敗:", e));
+                musicBtn.innerHTML = "🔊";
+            }
+
             spinning = true;
+            document.getElementById('spin-trigger').style.visibility = 'hidden';
 
             const wheel = document.getElementById('wheel');
             const spinAudio = document.getElementById('sound-spin');
@@ -340,9 +347,7 @@
             setTimeout(() => {
                 const actualDeg = (360 - (currentRotation % 360)) % 360;
                 const themeIndex = Math.floor(actualDeg / 30);
-                
-                // 從選中的主題中，隨機選取 4 個選項之一
-                const theme = themes[themeIndex];
+                const theme = themes[themeIndex] || themes[0];
                 const randomOption = theme.options[Math.floor(Math.random() * 4)];
                 
                 showCard(theme.name, randomOption);
@@ -368,13 +373,23 @@
             
             document.getElementById('modal-overlay').style.display = 'block';
             document.getElementById('card-modal').style.display = 'block';
-            document.getElementById('spin-trigger').style.visibility = 'hidden';
         }
 
         function closeCard() {
             document.getElementById('modal-overlay').style.display = 'none';
             document.getElementById('card-modal').style.display = 'none';
             document.getElementById('spin-trigger').style.visibility = 'visible';
+        }
+
+        function toggleMusic() {
+            if (bgMusic.paused || bgMusic.muted) {
+                bgMusic.muted = false;
+                bgMusic.play();
+                musicBtn.innerHTML = "🔊";
+            } else {
+                bgMusic.pause();
+                musicBtn.innerHTML = "🔇";
+            }
         }
     </script>
 </body>
