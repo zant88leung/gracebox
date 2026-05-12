@@ -156,15 +156,16 @@
             padding: 30px; color: #3E2723;
         }
 
-        .item-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; text-align: center; }
-        .bible-verse { font-size: 18px; font-weight: 600; color: #4E342E; margin-bottom: 5px; text-align: left; line-height: 1.4; }
+        .item-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; text-align: center; color: #5D4037; }
+        .bible-verse { font-size: 16px; font-weight: 600; color: #4E342E; margin-bottom: 5px; text-align: left; line-height: 1.4; }
         .verse-source { font-size: 13px; color: #795548; text-align: right; margin-bottom: 10px; }
-        .comfort-text { font-size: 17px; color: #5D4037; border-top: 1.5px solid rgba(121, 85, 72, 0.3); padding-top: 10px; line-height: 1.5; }
+        .comfort-text { font-size: 15px; color: #5D4037; border-top: 1.5px solid rgba(121, 85, 72, 0.3); padding-top: 10px; line-height: 1.5; font-weight: 500; }
 
         .close-btn {
             display: block; margin: 15px auto 0; background: #FFE082; border: none;
             padding: 12px 40px; border-radius: 25px; color: #3E2723; font-weight: bold;
             font-size: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            cursor: pointer;
         }
     
         .music-control { position: fixed; bottom: 20px; right: 20px; z-index: 2000; }
@@ -210,19 +211,59 @@
 
     <script>
         const themes = [
-            { name: "皇冠", options: [{ comfort: "你是尊貴的兒女，主已為你預備了生命的冠冕。", verse: "「必有公義的冠冕為我存留。」— 提摩太後書 4:8" }] },
-            { name: "樹苗", options: [{ comfort: "雖如微小的種子，但在恩典中必能茁壯。", verse: "「他要像一棵樹栽在溪水旁。」— 詩篇 1:3" }] },
-            { name: "夕陽", options: [{ comfort: "歇下勞苦，安穩入睡，主應許早晨必有歡呼。", verse: "「一宿雖然有哭泣，早晨便必歡呼。」— 詩篇 30:5" }] },
-            { name: "白鴿", options: [{ comfort: "讓聖靈如鴿子降臨你心，賜下平安。", verse: "「我留下平安給你們。」— 約翰福音 14:27" }] },
-            { name: "酒杯", options: [{ comfort: "祂的恩典使你的福杯滿溢，主是你的泉源。", verse: "「使我的福杯滿溢。」— 詩篇 23:5" }] },
-            { name: "燈台", options: [{ comfort: "即便身處幽暗，主的話是你腳前的燈。", verse: "「你的話是我腳前的燈。」— 詩篇 119:105" }] },
-            { name: "盾牌", options: [{ comfort: "主是你的避難所，祂的信實是你的盾牌。", verse: "「耶和華是我的力量，是我的盾牌。」— 詩篇 28:7" }] },
-            { name: "鎖匙", options: [{ comfort: "主必為你開那無人能關的門。", verse: "「拿著大衛鑰匙的，開了就無人能關。」— 啟示錄 3:7" }] },
-            { name: "百合", options: [{ comfort: "看那野地的百合花，主更必顧念你。", verse: "「你想野地裡的百合花怎麼長起來。」— 馬太福音 6:28" }] },
-            { name: "葡萄", options: [{ comfort: "常在主裡面，生命就必多結果子。", verse: "「我是葡萄樹，你們是枝子。」— 約翰福音 15:5" }] },
-            { name: "爉燭", options: [{ comfort: "哪怕只有微弱的光，主必不吹滅。", verse: "「將殘的燈火，他不吹滅。」— 馬太福音 12:20" }] },
-            { name: "星星", options: [{ comfort: "仰望星空，主的應許如繁星般永恆。", verse: "「智慧人必發光，如同天上的光。」— 但以理書 12:3" }] }
+            { name: "皇冠", options: [
+                { comfort: "你是上帝尊貴的兒女，祂已為你預備生命的冠冕，要在榮耀中為你戴上。", verse: "「從此以後，有公義的冠冕為我存留，就是按著公義審判的主到了那日要賜給我的；不但賜給我，也賜給凡愛幕他顯現的人。」— 提摩太後書 4章8節" },
+                { comfort: "你被上帝親自揀選，在祂愛中你不再卑微，是天父眼中尊貴的子民。", verse: "「惟有你們是被揀選的族類，是有君尊的祭司，是聖潔的國度，是屬神的子民，要叫你們宣揚那召你們出黑暗入奇妙光明者的美德。」— 彼得前書 2章9節" }
+            ]},
+            { name: "樹苗", options: [
+                { comfort: "你的生命根基建立在上帝的愛裡，無論環境如何，主必保守你信心堅固。", verse: "「在他裏面生根建造，信心堅固，正如你們所領的教訓，感謝的心也更增長了。」— 歌羅西書 2章7節" },
+                { comfort: "上帝必眷顧你的，使原本乾渴的曠野變為肥美沃土，讓你的生活充滿喜樂。", verse: "「曠野和乾旱之地必然歡喜；沙漠也必快樂；又像玫瑰開花。」— 以賽亞書 35章1節" }
+            ]},
+            { name: "夕陽", options: [
+                { comfort: "雖然日頭落下，但上帝的慈愛永遠不長眠，祂必在黑夜中親自看顧你。", verse: "「他必不叫你的腳搖動；保護你的必不打盹！保護以色列的，也不打盹也不睡覺。」— 詩篇 121篇3-4節" },
+                { comfort: "把重擔卸給神吧，不要為明天憂慮，上帝必供應你每天所需。", verse: "「所以，不要為明天憂慮，因為明天自有明天的憂慮；一天的難處一天當就夠了。」— 馬太福音 6章34節" }
+            ]},
+            { name: "白鴿", options: [
+                { comfort: "上帝賜下保惠師，在你孤單無助時與你常在，賜你智慧與隨時的安慰。", verse: "「我要求父，父就另外賜給你們一位保惠師，叫他永遠與你們同在。」— 約翰福音 14章16節" },
+                { comfort: "當你心靈憂傷時，聖靈必親自為你禱告，體恤你的軟弱。", verse: "「況且，我們的軟弱有聖靈幫助；我們本不曉得當怎樣禱告，只是聖靈親自用說不出來的歎息替我們禱告。」— 羅馬書 8章26節" }
+            ]},
+            { name: "酒杯", options: [
+                { comfort: "你是主恩典席上的貴客，祂必親自照顧你，讓你每天的福氣都滿到流出來。", verse: "「在我敵人面前，你為我擺設筵席；你用油膏了我的頭，使我的福杯滿溢。」— 詩篇 23篇5節" },
+                { comfort: "主是你生命中最寶貴的產業，祂會幫你守護這份從天而來的福分。", verse: "「耶和華是我的產業，是我杯中的分；我所得的，你為我持守。」— 詩篇 16篇5節" }
+            ]},
+            { name: "燈台", options: [
+                { comfort: "在迷茫時，上帝的話語就像一盞明燈，照亮你腳下的路，讓你不再跌倒。", verse: "「你的話是我腳前的燈，是我路上的光。」— 詩篇 119篇105節" },
+                { comfort: "就算環境黑暗，只要留意上帝的話語，心靈的曙光必會出現。", verse: "「我們並有先知更確的預言，如同燈照在暗處。你們在這預言上留意，直等到天發亮，晨星在你們心裏出現的時候，才是好的。」— 彼得後書 1章19節" }
+            ]},
+            { name: "盾牌", options: [
+                { comfort: "上帝的信實是你最強大的保護，祂必用溫柔的翅膀遮蓋你，讓你感到安全。", verse: "「他必用自己的翎毛遮蔽你；你要投靠在他的翅膀底下；他的誠實是大小的盾牌。」— 詩篇 91篇4節" },
+                { comfort: "在患難中，上帝是你最穩固的避難所，祂會隨時給你力量去面對挑戰。", verse: "「神是我們的避難所，是我們的力量，是我們在患難中隨時的幫助。」— 詩篇 46篇1節" }
+            ]},
+            { name: "鎖匙", options: [
+                { comfort: "你擁有天國子民的權柄，只要憑信心祈求，上帝必為你開啟恩典的大門。", verse: "「我要把天國的鑰匙給你，凡你在地上所捆綁的，在天上也要捆綁；凡你在地上所釋放的，在天上也要釋放。」— 馬太福音 16章19節" },
+                { comfort: "耶穌是唯一的生命之門，全心倚靠祂的領路，你必得著豐盛與拯救。", verse: "「我就是門；凡從我進來的，必然得救，並且出入得草吃。」— 約翰福音 10章9節" }
+            ]},
+            { name: "百合", options: [
+                { comfort: "上帝必親自滋潤你的生命，使你像百合花般盛開，並在祂的愛中扎根。", verse: "「我必向以色列如甘露；他必如百合花開放，如黎巴嫩的樹木扎根。」— 何西阿書 14章5節" },
+                { comfort: "上帝細心照料世上萬物，祂也必按時供應你生活所需，讓你毫無缺乏。", verse: "「他使草生長，給六畜吃，使菜蔬發長，供給人用，使人從地裏能得食物。」— 詩篇 104篇14節" }
+            ]},
+            { name: "葡萄", options: [
+                { comfort: "你是與主相連的寶貴枝子，能從主愛中領受那源源不絕、永不枯竭的養分。", verse: "「聖靈所結的果子，就是仁愛、喜樂、和平、忍耐、恩慈、良善、信實、溫柔、節制。這樣的事沒有律法禁止。」— 加拉太書 5章22-23節" },
+                { comfort: "你就像上帝親手栽種在水旁的樹，能透過河邊的根，汲取活水泉源。", verse: "「他必像樹栽於水旁，在河邊扎根，炎熱來到，並不懼怕，葉子仍必青翠，在乾旱之年毫無掛慮，而且結果不止。」— 耶利米書 17章8節" }
+            ]},
+            { name: "爉燭", options: [
+                { comfort: "上帝是你生命中永遠的保障，有祂的光照亮引導，你就不必再懼怕黑暗。", verse: "「耶和華是我的亮光，是我的拯救，我還怕誰呢？耶和華是我性命的保障，我還懼誰呢？」— 詩篇 27篇1節" },
+                { comfort: "哪怕你感到前路黑暗，上帝必親自點燃你心裡的燈火，驅散一切陰霾。", verse: "「你必點著我的燈；耶和華－我的神必照明我的黑暗。」— 詩篇 18篇28節" }
+            ]},
+            { name: "星星", options: [
+                { comfort: "上帝能叫繁星各歸其位，祂也必深知你的名字，用智慧與能力引領你的前程。", verse: "「他數點星宿的數目，一一稱它的名。我們的主為大，最有能力；他的智慧無法測度。」— 詩篇 147篇4-5節" },
+                { comfort: "耶穌是照亮心靈的明亮晨星，信靠祂的權柄，你必能在這世代中發出光輝。", verse: "「我－耶穌差遣我的使者為眾教會將這些事向你們證明。我是大衛的根，又是他的後裔。我是明亮的晨星。」— 啟示錄 22章16節" }
+            ]}
         ];
+
+        // 新增計數器以追蹤每個主題的抽取次數
+        let themeCounters = {};
+        themes.forEach(t => themeCounters[t.name] = 0);
 
         let spinning = false;
         let currentRotation = 0;
@@ -231,10 +272,9 @@
         const spinSound = document.getElementById('sound-spin');
         const dingSound = document.getElementById('sound-ding');
 
-        // 初始化音量設定
-        bgMusic.volume = 0.2;     // 背景音樂設為 20%
-        spinSound.volume = 0.5;   // 轉動聲設為 50%
-        dingSound.volume = 0.6;   // 叮聲設為 60%
+        bgMusic.volume = 0.2;
+        spinSound.volume = 0.5;
+        dingSound.volume = 0.6;
 
         function spinWheel() {
             if (spinning) return;
@@ -246,7 +286,6 @@
 
             spinning = true;
             document.getElementById('spin-area').style.visibility = 'hidden';
-
             spinSound.play().catch(()=>{});
 
             const randomExtra = Math.floor(Math.random() * 360);
@@ -257,7 +296,15 @@
                 const actualDeg = (360 - (currentRotation % 360)) % 360;
                 const themeIndex = Math.floor(actualDeg / 30);
                 const theme = themes[themeIndex] || themes[0];
-                showCard(theme.name, theme.options[0]);
+                
+                // 根據抽取次數輪流選取該主題下的選項 (0, 1, 0, 1...)
+                const optionIndex = themeCounters[theme.name] % theme.options.length;
+                const selectedOption = theme.options[optionIndex];
+                
+                // 增加該主題的計數
+                themeCounters[theme.name]++;
+                
+                showCard(theme.name, selectedOption);
                 dingSound.play().catch(()=>{});
                 spinning = false;
             }, 4000);
@@ -266,6 +313,7 @@
         function showCard(themeName, option) {
             const randomImgNum = Math.floor(Math.random() * 3) + 1;
             document.getElementById('reward-card-img').src = `images/card_00${randomImgNum}.png`;
+            
             const parts = option.verse.split('—');
             document.getElementById('card-content').innerHTML = `
                 <div class="item-title">【${themeName}】</div>
